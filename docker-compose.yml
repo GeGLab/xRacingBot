@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./api
+    container_name: xracing-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DISCORD_TOKEN: MTI5MzI0MDkzODU3NDkwOTQ0MA.GhWBjU.t_CGI-6yC_Me4Rg95EAJw1I26ZB5Sry36LP0L4
+      YOUTUBE_CHANNELS: XRACING:UCW3oIxTLllTLK3Vy9jzdoEg,XRACING Quedas:UCfjNkkpiOZjPnvfV1mcrwmQ
+      PORT: "3000"
+      YOUTUBE_CALLBACK_URL: https://your-public-domain.com/webhook/youtube
+      WEBHOOK_SECRET: ""
+      DATABASE_PATH: /app/data/bot.db
+    volumes:
+      - sqlite_data:/app/data
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - xracing-net
+
+  front:
+    build:
+      context: ./front
+      args:
+        VITE_DISCORD_CLIENT_ID: "1293240938574909440"
+        VITE_SITE_URL: https://xracingnotifier.com
+    container_name: xracing-front
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - xracing-net
+
+volumes:
+  sqlite_data:
+    driver: local
+
+networks:
+  xracing-net:
+    driver: bridge

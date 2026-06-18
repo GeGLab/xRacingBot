@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Test coverage
+coverage
+
+# Local data / SQLite database files
+data
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+
+# Environment files — keep .env.example, ignore everything else
+.env
+.env.local
+.env.*.local
+
+# Version control
+.git
+.gitignore
+
+# Documentation
+README.md
+
+# Tests
+tests/
+vitest.config.ts

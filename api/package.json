@@ -1,0 +1,55 @@
+{
+  "name": "xracingnotifier",
+  "version": "1.0.0",
+  "description": "Discord bot that notifies servers when a new YouTube video is published — Clean Architecture + DDD",
+  "main": "dist/main/server.js",
+  "scripts": {
+    "dev": "tsx watch src/main/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src tests",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "db:inspect": "tsx src/scripts/db-inspect.ts",
+    "db:reset": "tsx src/scripts/db-reset.ts",
+    "db:clear": "tsx src/scripts/db-reset.ts --clear"
+  },
+  "keywords": [
+    "discord",
+    "youtube",
+    "bot",
+    "notifications",
+    "clean-architecture",
+    "ddd"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.7.0",
+    "better-sqlite3": "^12.8.0",
+    "discord.js": "^14.16.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0",
+    "node-cron": "^3.0.3",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/xml2js": "^0.4.14",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.1.0"
+  }
+}
