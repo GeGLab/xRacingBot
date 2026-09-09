@@ -1,6 +1,6 @@
 /**
  * =============================================
- * XRacing Notifier — Configuração Central
+ * Bora de xracing — Configuração Central
  * =============================================
  *
  * O Client ID do bot Discord é lido da variável de ambiente VITE_DISCORD_CLIENT_ID.
@@ -46,4 +46,11 @@ export const SITE_URL =
 /**
  * Nome do canal do YouTube monitorado.
  */
-export const CHANNEL_NAME = "XRACING";
+export const CHANNEL_NAME = "xracing";
+
+export const REPOSITORY_URL =
+  "https://github.com/guilhermeSDB/xracing-notifier";
+export const YOUTUBE_CHANNELS = [
+  { name: "xracing Videos", url: "https://www.youtube.com/@XracingVideos" },
+  { name: "xracing Quedas", url: "https://www.youtube.com/@XracingQuedas" },
+];

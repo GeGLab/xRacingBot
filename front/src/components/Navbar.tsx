@@ -1,80 +1,97 @@
-import { memo, useState, useEffect } from "react";
-import { ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, Menu, Play, X } from "lucide-react";
 import { BOT_INVITE_URL } from "../config";
+import { useLanguage } from "../i18n";
 
-const Navbar = memo(function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+export default function Navbar() {
+  const { t, locale, setLocale } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const update = () => setCompact(window.scrollY > 56);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
-
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${
-        scrolled
-          ? "bg-zinc-950/80 backdrop-blur-md border-zinc-800 shadow-lg shadow-black/50"
-          : "bg-transparent border-transparent"
-      }`}
-      role="navigation"
-      aria-label="Navegação principal"
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <header className={`site-header${compact ? " is-compact" : ""}`}>
+      <nav className="nav" aria-label={t.nav}>
         <a
-          href="/"
-          className="flex items-center space-x-2"
-          aria-label="XRacing Notifier - Página Inicial"
+          href="#main"
+          className="brand"
+          aria-label={`Bora de xracing — ${t.home}`}
         >
-          <div className="relative w-8 h-8">
-            <img
-              src="/xracing-logo.jpg"
-              alt="XRacing Notifier Logo"
-              className="w-full h-full object-cover rounded-full"
-              width={32}
-              height={32}
-              loading="eager"
-            />
-            <div
-              className="absolute inset-0 bg-red-500 blur-sm opacity-20 rounded-full"
-              aria-hidden="true"
-            />
-          </div>
-          <span className="text-xl font-bold tracking-tight italic text-white">
-            XRacing<span className="text-red-500">Notifier</span>
+          <span className="brand-icon">
+            <Play size={20} fill="currentColor" aria-hidden="true" />
+          </span>
+          <span>
+            Bora de{" "}
+            <strong>
+              xracing<span className="brand-dot">.</span>
+            </strong>
           </span>
         </a>
-
-        <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-400">
-          <a href="#features" className="hover:text-white transition-colors">
-            Funcionalidades
-          </a>
-          <a
-            href="#how-it-works"
-            className="hover:text-white transition-colors"
-          >
-            Como Funciona
-          </a>
-          <a href="#preview" className="hover:text-white transition-colors">
-            Preview
-          </a>
+        <div className="desktop-links">
+          <a href="#how-it-works">{t.how}</a>
+          <a href="#story">{t.story}</a>
+          <a href="#faq">{t.faq}</a>
         </div>
-
-        <a
-          href={BOT_INVITE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-red-600 hover:bg-red-500 text-white px-5 py-2 rounded-md font-semibold text-sm transition-all duration-300 shadow-[0_0_15px_rgba(220,38,38,0.4)] hover:shadow-[0_0_25px_rgba(220,38,38,0.6)] flex items-center group"
-        >
-          Adicionar Bot
-          <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-        </a>
-      </div>
-    </nav>
+        <div className="nav-actions">
+          <div className="language-switch" role="group" aria-label={t.language}>
+            <button
+              lang="pt-BR"
+              aria-label="Português do Brasil"
+              aria-pressed={locale === "pt-BR"}
+              onClick={() => setLocale("pt-BR")}
+            >
+              PT
+            </button>
+            <button
+              lang="en"
+              aria-label="English"
+              aria-pressed={locale === "en"}
+              onClick={() => setLocale("en")}
+            >
+              EN
+            </button>
+          </div>
+          <a
+            href={BOT_INVITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button button-small nav-invite"
+          >
+            {t.add}
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+          <button
+            className="menu-toggle"
+            aria-label={t.menu}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </button>
+        </div>
+        {open && (
+          <div id="mobile-menu" className="mobile-menu">
+            <a href="#how-it-works" onClick={() => setOpen(false)}>
+              {t.how}
+            </a>
+            <a href="#story" onClick={() => setOpen(false)}>
+              {t.story}
+            </a>
+            <a href="#faq" onClick={() => setOpen(false)}>
+              {t.faq}
+            </a>
+            <a href={BOT_INVITE_URL} target="_blank" rel="noopener noreferrer">
+              {t.add}
+            </a>
+          </div>
+        )}
+      </nav>
+    </header>
   );
-});
-
-export default Navbar;
+}

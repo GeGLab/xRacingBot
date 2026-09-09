@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "XRacing Notifier - Receba notificações instantâneas no Discord quando o XRACING postar um novo vídeo.",
+  "description": "Bora de xracing - Bot independente de fã para fãs: novidades do xracing no Discord para assistir com os amigos.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

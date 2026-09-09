@@ -1,212 +1,67 @@
 <!doctype html>
 <html lang="pt-BR" dir="ltr">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
-        />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-        <!-- Primary Meta Tags -->
-        <title>
-            XRacing Notifier | Notificações do XRACING no Discord em Tempo Real
-        </title>
-        <meta
-            name="title"
-            content="XRacing Notifier | Notificações do XRACING no Discord em Tempo Real"
-        />
-        <meta
-            name="description"
-            content="Receba notificações instantâneas no seu servidor do Discord assim que o XRACING lançar um novo vídeo. Configuração em menos de 1 minuto. Grátis e sem spam."
-        />
-        <meta
-            name="keywords"
-            content="XRACING, notificador, Discord bot, YouTube notificações, motovlog, moto, notifier, xracing discord, xracing notifier, xracing bot"
-        />
-        <meta name="author" content="XRacing Notifier" />
-        <meta
-            name="robots"
-            content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-        />
-        <meta name="googlebot" content="index, follow" />
-        <link rel="canonical" href="https://xracingnotifier.com/" />
-        <meta name="theme-color" content="#dc2626" />
-        <meta name="color-scheme" content="dark" />
-
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://xracingnotifier.com/" />
-        <meta
-            property="og:title"
-            content="XRacing Notifier | Notificações do XRACING no Discord"
-        />
-        <meta
-            property="og:description"
-            content="Receba notificações instantâneas no seu servidor do Discord assim que o XRACING lançar um novo vídeo. Grátis e sem spam."
-        />
-        <meta
-            property="og:image"
-            content="https://xracingnotifier.com/og-image.png"
-        />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta
-            property="og:image:alt"
-            content="XRacing Notifier - Bot de Discord para notificações do XRACING"
-        />
-        <meta property="og:locale" content="pt_BR" />
-        <meta property="og:site_name" content="XRacing Notifier" />
-
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://xracingnotifier.com/" />
-        <meta
-            property="twitter:title"
-            content="XRacing Notifier | Notificações do XRACING no Discord"
-        />
-        <meta
-            property="twitter:description"
-            content="Receba notificações instantâneas no seu servidor do Discord assim que o XRACING lançar um novo vídeo."
-        />
-        <meta
-            property="twitter:image"
-            content="https://xracingnotifier.com/og-image.png"
-        />
-
-        <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="/favicon-32x32.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/favicon-16x16.png"
-        />
-        <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/apple-touch-icon.png"
-        />
-        <link rel="manifest" href="/site.webmanifest" />
-
-        <!-- Preload critical resources -->
-        <link rel="preload" href="/xracing-logo.jpg" as="image" />
-
-        <!-- DNS Prefetch for external resources -->
-        <link rel="dns-prefetch" href="https://discord.com" />
-
-        <!-- Structured Data (JSON-LD) -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "SoftwareApplication",
-                "name": "XRacing Notifier",
-                "applicationCategory": "CommunicationApplication",
-                "operatingSystem": "Web",
-                "description": "Bot de Discord que envia notificações instantâneas quando o canal XRACING publica um novo vídeo no YouTube.",
-                "url": "https://xracingnotifier.com/",
-                "offers": {
-                    "@type": "Offer",
-                    "price": "0",
-                    "priceCurrency": "BRL"
-                },
-                "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": "5",
-                    "ratingCount": "150",
-                    "bestRating": "5",
-                    "worstRating": "1"
-                },
-                "author": {
-                    "@type": "Organization",
-                    "name": "XRacing Notifier"
-                }
-            }
-        </script>
-
-        <!-- Additional Structured Data - FAQ -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": [
-                    {
-                        "@type": "Question",
-                        "name": "Como adicionar o XRacing Notifier ao meu servidor Discord?",
-                        "acceptedAnswer": {
-                            "@type": "Answer",
-                            "text": "Basta clicar no botão 'Adicionar Bot' na nossa página, autorizar o bot no seu servidor do Discord, escolher o canal onde quer receber as notificações pela própria tela do Discord e usar o comando /subscribe para selecionar quais canais quer acompanhar: Todos, só XRACING ou só XRACING Quedas."
-                        }
-                    },
-                    {
-                        "@type": "Question",
-                        "name": "O XRacing Notifier é gratuito?",
-                        "acceptedAnswer": {
-                            "@type": "Answer",
-                            "text": "Sim, o XRacing Notifier é 100% gratuito e sem spam. Apenas envia notificações quando os canais que você escolheu publicam um novo vídeo."
-                        }
-                    },
-                    {
-                        "@type": "Question",
-                        "name": "Quanto tempo demora a configurar?",
-                        "acceptedAnswer": {
-                            "@type": "Answer",
-                            "text": "A configuração leva menos de 1 minuto. Adicione o bot, escolha o canal pela tela do Discord, use /subscribe para selecionar o que quer acompanhar e pronto!"
-                        }
-                    }
-                ]
-            }
-        </script>
-    </head>
-    <body>
-        <div id="root"></div>
-        <script type="module" src="/src/main.tsx"></script>
-
-        <!-- Noscript fallback for SEO -->
-        <noscript>
-            <div
-                style="
-                    padding: 2rem;
-                    text-align: center;
-                    font-family: system-ui, sans-serif;
-                    background: #09090b;
-                    color: #f4f4f5;
-                    min-height: 100vh;
-                "
-            >
-                <h1>XRacing Notifier</h1>
-                <p>
-                    Receba notificações instantâneas no seu servidor do Discord
-                    assim que o XRACING lançar um novo vídeo.
-                </p>
-                <h2>Funcionalidades</h2>
-                <ul style="list-style: none; padding: 0">
-                    <li>⚡ Alertas em Tempo Real usando WebSub</li>
-                    <li>⚙️ Configuração em menos de 1 minuto</li>
-                    <li>🖥️ Funciona em servidores de qualquer tamanho</li>
-                    <li>🛡️ Zero spam - apenas vídeos do XRACING</li>
-                </ul>
-                <h2>Como Funciona</h2>
-                <ol>
-                    <li>
-                        Convide o Bot e escolha o canal pela tela do Discord
-                    </li>
-                    <li>
-                        Use /subscribe e escolha: Todos, XRACING ou XRACING
-                        Quedas
-                    </li>
-                    <li>
-                        Pronto! Você vai receber notificações automaticamente.
-                    </li>
-                </ol>
-                <p>Ative o JavaScript para a melhor experiência.</p>
-            </div>
-        </noscript>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bora de xracing | Vídeo novo. Galera na call.</title>
+    <meta
+      name="description"
+      content="Um bot gratuito e independente de fã para fãs: receba novidades do xracing no Discord e reúna os amigos para assistir junto."
+    />
+    <meta name="theme-color" content="#101012" />
+    <meta name="color-scheme" content="dark" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Bora de xracing | Vídeo novo. Galera na call."
+    />
+    <meta
+      property="og:description"
+      content="Um bot gratuito e independente de fã para fãs: receba novidades do xracing no Discord e reúna os amigos para assistir junto."
+    />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Bora de xracing" />
+    <meta property="twitter:card" content="summary" />
+    <meta
+      property="twitter:title"
+      content="Bora de xracing | Vídeo novo. Galera na call."
+    />
+    <meta
+      property="twitter:description"
+      content="Um bot gratuito e independente de fã para fãs: receba novidades do xracing no Discord e reúna os amigos para assistir junto."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Bora de xracing",
+        "applicationCategory": "CommunicationApplication",
+        "operatingSystem": "Discord",
+        "description": "Bot independente de fã para fãs que envia links de vídeos do xracing no Discord.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <h1>Bora de xracing</h1>
+      <p>
+        Vídeo novo. Galera na call. Um bot gratuito e não oficial para receber
+        novidades do xracing no Discord e assistir com os amigos.
+      </p>
+      <p>
+        Ative o JavaScript para usar a página e escolher português ou inglês.
+      </p>
+      <p lang="en">
+        A free, unofficial bot for xracing video notifications on Discord.
+        Enable JavaScript to use this page and switch to English.
+      </p>
+      <a href="https://www.youtube.com/@XracingVideos">xracing Videos</a>
+      <a href="https://www.youtube.com/@XracingQuedas">xracing Quedas</a>
+    </noscript>
+  </body>
 </html>
