@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { BOT_INVITE_URL } from "../config";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 export default function CTA() {
   const { t } = useLanguage();
   return (

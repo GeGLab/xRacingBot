@@ -1,4 +1,4 @@
-import { Video } from '../../domain/entities/Video';
+import type { Video } from '../../domain/entities/Video';
 
 /**
  * IYoutubeGateway — Application Port (outbound)

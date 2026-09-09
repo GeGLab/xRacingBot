@@ -43,6 +43,25 @@ export async function registerSlashCommands(
           .addChoices(...channelChoices),
       ),
     new SlashCommandBuilder()
+      .setName('status')
+      .setDescription('Mostrar canais monitorados e preferência de ping deste servidor'),
+    new SlashCommandBuilder()
+      .setName('test')
+      .setDescription('Enviar uma notificação de teste neste canal, sem mencionar ninguém'),
+    new SlashCommandBuilder()
+      .setName('configurar-ping')
+      .setDescription('Definir se os avisos podem mencionar @everyone neste servidor')
+      .addStringOption((option) =>
+        option
+          .setName('modo')
+          .setDescription('Modo de menção para avisos de vídeo novo')
+          .setRequired(true)
+          .addChoices(
+            { name: 'Sem menção', value: 'none' },
+            { name: 'Mencionar @everyone', value: 'everyone' },
+          ),
+      ),
+    new SlashCommandBuilder()
       .setName('unsubscribe')
       .setDescription('Cancelar a inscrição deste servidor nas notificações de vídeos do YouTube')
       .addStringOption((option) =>

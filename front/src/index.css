@@ -175,6 +175,17 @@ svg {
 .brand-dot {
   color: var(--accent);
 }
+.brand-icon img,
+.bot-avatar img,
+.footer-logo {
+  width: 40px;
+  height: 40px;
+  display: block;
+  object-fit: cover;
+}
+.brand-icon img {
+  border-radius: inherit;
+}
 .desktop-links,
 .nav-actions {
   display: flex;
@@ -822,6 +833,83 @@ svg {
   font-size: 0.8125rem;
   color: var(--muted);
 }
+.gng-credit {
+  color: #d7d7df;
+}
+.gng-credit:hover {
+  color: var(--accent);
+}
+
+/* Motion stays quiet: it gives feedback without delaying the reading flow. */
+.hero-copy > * {
+  animation: reveal-up 0.72s both cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-copy > :nth-child(1) {
+  animation-delay: 0.04s;
+}
+.hero-copy > :nth-child(2) {
+  animation-delay: 0.1s;
+}
+.hero-copy > :nth-child(3) {
+  animation-delay: 0.17s;
+}
+.hero-copy > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+.hero-copy > :nth-child(5) {
+  animation-delay: 0.31s;
+}
+.preview-3d {
+  animation: reveal-scale 0.9s 0.12s both cubic-bezier(0.22, 1, 0.36, 1);
+}
+.feature {
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+.feature:hover {
+  transform: translateY(-7px);
+  border-color: rgba(255, 81, 73, 0.72);
+}
+.steps li {
+  transition: transform 0.3s ease;
+}
+.steps li:hover {
+  transform: translateY(-5px);
+}
+.channel-links a svg:first-child {
+  animation: soft-pulse 3s ease-in-out infinite;
+}
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes soft-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 81, 73, 0.65));
+  }
+}
 @media (min-width: 901px) {
   .mobile-menu {
     display: none;
@@ -1037,6 +1125,11 @@ svg {
     transform: none !important;
   }
   .scene-orbit {
+    animation: none;
+  }
+  .hero-copy > *,
+  .preview-3d,
+  .channel-links a svg:first-child {
     animation: none;
   }
 }

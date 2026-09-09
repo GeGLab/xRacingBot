@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUpRight, Youtube } from "lucide-react";
 import { BOT_INVITE_URL, YOUTUBE_CHANNELS } from "../config";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 import DiscordPreview from "./DiscordPreview";
 
 export default function Hero() {

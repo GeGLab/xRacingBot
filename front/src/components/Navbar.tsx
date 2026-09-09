@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Menu, Play, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { BOT_INVITE_URL } from "../config";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 
 export default function Navbar() {
   const { t, locale, setLocale } = useLanguage();
@@ -23,7 +23,7 @@ export default function Navbar() {
           aria-label={`Bora de xracing — ${t.home}`}
         >
           <span className="brand-icon">
-            <Play size={20} fill="currentColor" aria-hidden="true" />
+            <img src="/xracing-logo-transparent.png" alt="" width={36} height={36} />
           </span>
           <span>
             Bora de{" "}

@@ -1,5 +1,5 @@
 import { BellRing, SlidersHorizontal, Users } from "lucide-react";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 const icons = [BellRing, SlidersHorizontal, Users];
 export default function Features() {
   const { t } = useLanguage();

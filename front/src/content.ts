@@ -123,6 +123,7 @@ export const content = {
       "Leve o aviso para o seu servidor. A companhia, as risadas e a resenha ficam com vocês.",
     footer: "Feito no Brasil, para quem gosta de assistir junto.",
     footerNav: "Links do projeto",
+    credit: "Um produto G&G Desenvolvimento, Brasil",
     disclaimer:
       "Projeto gratuito e não oficial, sem afiliação com xracing, YouTube ou Discord.",
   },
@@ -250,6 +251,7 @@ export const content = {
       "Bring notifications to your server. You and your friends bring the laughs, the reactions, and the good company.",
     footer: "Made in Brazil, for everyone who loves watching together.",
     footerNav: "Project links",
+    credit: "A G&G Desenvolvimento product, Brazil",
     disclaimer:
       "A free, unofficial project. Not affiliated with xracing, YouTube, or Discord.",
   },

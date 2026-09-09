@@ -1,6 +1,7 @@
-import { Video } from '../../domain/entities/Video';
-import { INotificationService } from '../services/INotificationService';
-import { ISubscriptionRepository } from '../../domain/repositories/ISubscriptionRepository';
+import type { Video } from '../../domain/entities/Video';
+import type { INotificationService } from '../services/INotificationService';
+import type { ISubscriptionRepository } from '../../domain/repositories/ISubscriptionRepository';
+import type { IGuildNotificationSettingsRepository } from '../../domain/repositories/IGuildNotificationSettingsRepository';
 
 /**
  * HandleWebhookInput — input DTO for the webhook use-case.
@@ -21,11 +22,9 @@ export interface HandleWebhookInput {
  *
  *   1. Finding all Discord subscriptions for that YouTube channel.
  *   2. Skipping already-seen videos (idempotency guard).
- *   3. Checking whether the video was published today (UTC) to classify
- *      it as `'new'` or `'reminder'`.
- *   4. Sending the notification to each subscribed Discord channel with
- *      the appropriate type so the notification service can format it
- *      differently for brand-new vs. older videos.
+ *   3. Recording older entries as seen without alerting, avoiding delayed
+ *      or historical notifications when the webhook is restored.
+ *   4. Sending new-video notifications to each subscribed Discord channel.
  *   5. Persisting the new lastVideoId.
  *
  * Difference from NotifyNewVideoUseCase: receives a pre-parsed Video
@@ -35,6 +34,7 @@ export class HandleYoutubeWebhookUseCase {
   constructor(
     private readonly notifier: INotificationService,
     private readonly repository: ISubscriptionRepository,
+    private readonly settings: IGuildNotificationSettingsRepository,
   ) {}
 
   async execute(input: HandleWebhookInput): Promise<void> {
@@ -46,25 +46,35 @@ export class HandleYoutubeWebhookUseCase {
       if (video.id === subscription.lastVideoId) continue;
 
       const isToday = this.isPublishedToday(video.publishedAt);
-      const type = isToday ? 'new' : 'reminder';
-
-      if (isToday) {
-        console.log(`[webhook] 🆕 New video today: "${video.title}" → sending as NEW`);
-      } else {
+      if (!isToday) {
         console.log(
-          `[webhook] 📺 Older video detected: "${video.title}" (published ${video.publishedAt.toISOString()}) → sending as REMINDER`,
+          `[webhook] ⏭️  Ignoring older video: "${video.title}" (${video.publishedAt.toISOString()})`,
         );
+        subscription.markVideoAsSeen(video.id);
+        await this.repository.update(subscription);
+        continue;
       }
 
-      await this.notifier.send({
-        channelId: subscription.channelId,
-        title: video.title,
-        url: video.url,
-        type,
-      });
+      console.log(`[webhook] 🆕 New video today: "${video.title}" → sending as NEW`);
 
-      subscription.markVideoAsSeen(video.id);
-      await this.repository.update(subscription);
+      try {
+        await this.notifier.send({
+          channelId: subscription.channelId,
+          title: video.title,
+          url: video.url,
+          type: 'new',
+          mentionEveryone: (await this.settings.findByGuildId(subscription.guildId)).mentionEveryone,
+        });
+
+        subscription.markVideoAsSeen(video.id);
+        await this.repository.update(subscription);
+      } catch (error) {
+        // The failed subscription remains eligible for the polling fallback.
+        console.error(
+          `[webhook] Failed to notify Discord channel ${subscription.channelId}:`,
+          error,
+        );
+      }
     }
   }
 

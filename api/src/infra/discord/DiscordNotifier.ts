@@ -1,5 +1,6 @@
-import { Client, PermissionFlagsBits, TextChannel } from 'discord.js';
-import {
+import type { Client, TextChannel } from 'discord.js';
+import { PermissionFlagsBits } from 'discord.js';
+import type {
   INotificationService,
   SendNotificationInput,
 } from '../../application/services/INotificationService';
@@ -19,7 +20,7 @@ export class DiscordNotifier implements INotificationService {
   constructor(private readonly client: Client) {}
 
   async send(input: SendNotificationInput): Promise<void> {
-    const { channelId, type, url } = input;
+    const { channelId, type, url, mentionEveryone = false } = input;
 
     const channel = await this.client.channels.fetch(channelId);
 
@@ -36,17 +37,20 @@ export class DiscordNotifier implements INotificationService {
         ?.permissionsIn(textChannel)
         .has(PermissionFlagsBits.MentionEveryone) ?? false;
 
-    const mention = canMentionEveryone ? ' @everyone' : '';
+    const mention = mentionEveryone && canMentionEveryone ? ' @everyone' : '';
     const message = this.buildMessage(type, mention, url);
 
     await textChannel.send(message);
   }
 
   private buildMessage(type: SendNotificationInput['type'], mention: string, url: string): string {
+    if (type === 'test') {
+      return `✅ Teste concluído: o Bora de xracing consegue enviar mensagens neste canal.\n${url}`;
+    }
     if (type === 'reminder') {
-      return `📺 Não esqueça de assistir o último lançamento do XRACING!${mention}\n${url}`;
+      return `📺 Não esqueça de assistir o último lançamento do xracing!${mention}\n${url}`;
     }
 
-    return `🏍 Novo vídeo do XRACING já está no ar!${mention}\n${url}`;
+    return `🏍 Novo vídeo do xracing já está no ar!${mention}\n${url}`;
   }
 }

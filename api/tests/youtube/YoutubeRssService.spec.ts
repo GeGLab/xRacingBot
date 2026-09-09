@@ -87,6 +87,7 @@ describe('YoutubeRssService', () => {
     // Assert
     expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining('channel_id=UCuAXFkgsw1L7xaCfnd5JJOw'),
+      expect.objectContaining({ timeout: 10_000 }),
     );
   });
 

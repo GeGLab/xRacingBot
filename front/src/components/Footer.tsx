@@ -1,14 +1,20 @@
-import { Github, Play } from "lucide-react";
+import { Github } from "lucide-react";
 import { REPOSITORY_URL, YOUTUBE_CHANNELS } from "../config";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   return (
     <footer className="site-footer">
       <div className="container">
         <div className="footer-top">
           <a href="#main" className="brand">
-            <Play size={20} aria-hidden="true" />
+            <img
+              className="footer-logo"
+              src="/xracing-logo-transparent.png"
+              alt=""
+              width={8}
+              height={8}
+            />
             <span>
               Bora de <strong>xracing.</strong>
             </span>
@@ -34,6 +40,16 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Bora de xracing</span>
           <span>{t.footer}</span>
+          <a
+            className="gng-credit"
+            href={
+              locale === "en" ? "https://geg.dev.br/" : "https://geg.dev.br/pt/"
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.credit}
+          </a>
         </div>
       </div>
     </footer>

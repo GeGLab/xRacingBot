@@ -1,6 +1,9 @@
 import { type Interaction, PermissionFlagsBits } from 'discord.js';
 import type { SubscribeChannelUseCase } from '../../../application/use-cases/SubscribeChannelUseCase';
 import type { UnsubscribeChannelUseCase } from '../../../application/use-cases/UnsubscribeChannelUseCase';
+import type { SendTestNotificationUseCase } from '../../../application/use-cases/SendTestNotificationUseCase';
+import type { GetGuildStatusUseCase } from '../../../application/use-cases/GetGuildStatusUseCase';
+import type { UpdateGuildNotificationSettingsUseCase } from '../../../application/use-cases/UpdateGuildNotificationSettingsUseCase';
 import type { YouTubeChannel } from '../../../main/env';
 
 /** Special value used by the "Todos" choice in slash commands. */
@@ -16,6 +19,9 @@ export const ALL_CHANNELS_VALUE = 'all';
 export function createInteractionHandler(
   subscribe: SubscribeChannelUseCase,
   unsubscribe: UnsubscribeChannelUseCase,
+  sendTest: SendTestNotificationUseCase,
+  getStatus: GetGuildStatusUseCase,
+  updateSettings: UpdateGuildNotificationSettingsUseCase,
   youtubeChannels: YouTubeChannel[],
 ): (interaction: Interaction) => Promise<void> {
   return async (interaction: Interaction): Promise<void> => {
@@ -135,6 +141,42 @@ export function createInteractionHandler(
           await interaction.reply({
             content: lines.join('\n\n'),
             ephemeral: notFound.length > 0 && removed.length === 0,
+          });
+          break;
+        }
+
+        case 'status': {
+          const result = await getStatus.execute(interaction.guildId);
+          const subscribed = result.subscriptions.length === 0
+            ? 'Nenhum canal monitorado ainda.'
+            : result.subscriptions
+                .map((subscription) => {
+                  const channel = youtubeChannels.find((item) => item.id === subscription.youtubeChannelId);
+                  return `• **${channel?.name ?? subscription.youtubeChannelId}** → <#${subscription.channelId}>`;
+                })
+                .join('\n');
+          await interaction.reply({
+            content: `📋 **Status do Bora de xracing**\n\n${subscribed}\n\nPing @everyone: **${result.preferences.mentionEveryone ? 'ativado' : 'desativado'}**`,
+            ephemeral: true,
+          });
+          break;
+        }
+
+        case 'test': {
+          await sendTest.execute(interaction.channelId);
+          await interaction.reply({ content: '✅ Teste enviado neste canal, sem mencionar ninguém.', ephemeral: true });
+          break;
+        }
+
+        case 'configurar-ping': {
+          const mode = interaction.options.getString('modo', true);
+          const mentionEveryone = mode === 'everyone';
+          await updateSettings.execute(interaction.guildId, mentionEveryone);
+          await interaction.reply({
+            content: mentionEveryone
+              ? '✅ Avisos poderão mencionar @everyone quando o bot tiver essa permissão no canal.'
+              : '✅ Avisos configurados sem menção.',
+            ephemeral: true,
           });
           break;
         }

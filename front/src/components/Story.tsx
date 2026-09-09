@@ -1,6 +1,6 @@
 import { ArrowUpRight, Heart, Github } from "lucide-react";
 import { REPOSITORY_URL } from "../config";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 
 export default function Story() {
   const { t } = useLanguage();

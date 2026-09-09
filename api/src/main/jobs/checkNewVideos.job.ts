@@ -19,9 +19,7 @@ import type { NotifyNewVideoUseCase } from '../../application/use-cases/NotifyNe
  * @param useCase - The fully-wired NotifyNewVideoUseCase instance from the DI container.
  */
 export function startCheckNewVideosJob(useCase: NotifyNewVideoUseCase): void {
-  // 1 = Segunda-feira, 4 = Quinta-feira, 5 = Sexta-feira
-  const CRON_EXPRESSION = '0,30 18-22 * * 1,4,5';
-  // const CRON_EXPRESSION = '*/1 * * * *';
+  const CRON_EXPRESSION = '*/5 * * * *';
 
   schedule(CRON_EXPRESSION, async () => {
     console.log(`[checkNewVideos] ⏰  Tick — ${new Date().toISOString()}`);

@@ -6,7 +6,8 @@ import Story from "./components/Story";
 import FAQ from "./components/FAQ";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
-import { LanguageProvider, useLanguage } from "./i18n";
+import { LanguageProvider } from "./i18n";
+import { useLanguage } from "./use-language";
 
 function Landing() {
   const { t } = useLanguage();

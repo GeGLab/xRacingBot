@@ -1,5 +1,5 @@
 import { Terminal } from "lucide-react";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 export default function HowItWorks() {
   const { t } = useLanguage();
   return (

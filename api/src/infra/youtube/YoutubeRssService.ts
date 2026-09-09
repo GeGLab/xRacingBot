@@ -23,7 +23,11 @@ export class YoutubeRssService implements IYoutubeGateway {
   async getLatestVideo(youtubeChannelId: string): Promise<Video | null> {
     const feedUrl = `${this.BASE_URL}?channel_id=${youtubeChannelId}`;
 
-    const { data } = await axios.get<string>(feedUrl);
+    const { data } = await axios.get<string>(feedUrl, {
+      timeout: 10_000,
+      responseType: 'text',
+      maxContentLength: 1_000_000,
+    });
 
     const parsed: YoutubeFeed = await parseStringPromise(data, {
       explicitArray: false,

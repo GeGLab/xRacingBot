@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 
 export default function FAQ() {
   const { t } = useLanguage();

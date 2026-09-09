@@ -8,11 +8,11 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DISCORD_TOKEN: MTI5MzI0MDkzODU3NDkwOTQ0MA.GhWBjU.t_CGI-6yC_Me4Rg95EAJw1I26ZB5Sry36LP0L4
-      YOUTUBE_CHANNELS: XRACING:UCW3oIxTLllTLK3Vy9jzdoEg,XRACING Quedas:UCfjNkkpiOZjPnvfV1mcrwmQ
+      DISCORD_TOKEN: ${DISCORD_TOKEN:?Set DISCORD_TOKEN in your environment or .env file}
+      YOUTUBE_CHANNELS: xracing:UCW3oIxTLllTLK3Vy9jzdoEg,xracing Quedas:UCfjNkkpiOZjPnvfV1mcrwmQ
       PORT: "3000"
-      YOUTUBE_CALLBACK_URL: https://your-public-domain.com/webhook/youtube
-      WEBHOOK_SECRET: ""
+      YOUTUBE_CALLBACK_URL: ${YOUTUBE_CALLBACK_URL:?Set the public HTTPS webhook URL in your environment or .env file}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?Set a long random webhook secret in your environment or .env file}
       DATABASE_PATH: /app/data/bot.db
     volumes:
       - sqlite_data:/app/data

@@ -1,11 +1,14 @@
 import { createApp } from '../infra/http/app';
 import { startCheckNewVideosJob } from './jobs/checkNewVideos.job';
+import { startYoutubeWebSubRenewalJob } from './jobs/renewYoutubeWebSub.job';
 import { registerSlashCommands } from '../infra/discord/commands/registerCommands';
 import {
   discordClient,
   notifyNewVideoUseCase,
   youtubeWebhookController,
   interactionHandler,
+  youtubeWebSubService,
+  closeInfrastructure,
 } from './container';
 import { env } from './env';
 
@@ -48,6 +51,11 @@ async function bootstrap(): Promise<void> {
     console.log(`[http]    🔗  Webhook endpoint: POST /webhook/youtube`);
     console.log(`[http]    🔗  Health check:     GET  /health`);
   });
+
+  await youtubeWebSubService.subscribeAll(env.YOUTUBE_CHANNELS).catch((error) => {
+    console.error('[websub] Initial subscription failed; polling fallback remains active:', error);
+  });
+  startYoutubeWebSubRenewalJob(youtubeWebSubService, env.YOUTUBE_CHANNELS);
 
   // ── 2. Discord bot ────────────────────────────────────────────────────────
   discordClient.once('ready', async (readyClient) => {
@@ -92,6 +100,7 @@ async function bootstrap(): Promise<void> {
     // Close the Discord WebSocket connection cleanly
     discordClient.destroy();
     console.log('[shutdown] ✅  Discord client destroyed.');
+    closeInfrastructure();
 
     console.log('[shutdown] 👋  Bye!');
     process.exit(0);

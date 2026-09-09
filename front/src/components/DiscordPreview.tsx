@@ -8,7 +8,7 @@ import {
   Youtube,
   ArrowUpRight,
 } from "lucide-react";
-import { useLanguage } from "../i18n";
+import { useLanguage } from "../use-language";
 import { YOUTUBE_CHANNELS } from "../config";
 
 export default function DiscordPreview() {
@@ -59,7 +59,7 @@ export default function DiscordPreview() {
         </div>
         <div className="discord-message">
           <span className="bot-avatar">
-            <Play size={18} fill="currentColor" aria-hidden="true" />
+            <img src="/xracing-logo-transparent.png" alt="" width={35} height={35} />
           </span>
           <div className="message-body">
             <div className="message-author">

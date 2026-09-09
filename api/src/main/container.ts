@@ -6,12 +6,17 @@ import fs from 'fs';
 import { YoutubeRssService } from '../infra/youtube/YoutubeRssService';
 import { DiscordNotifier } from '../infra/discord/DiscordNotifier';
 import { SqliteSubscriptionRepository } from '../infra/database/SqliteSubscriptionRepository';
+import { SqliteGuildNotificationSettingsRepository } from '../infra/database/SqliteGuildNotificationSettingsRepository';
 import { YoutubeWebhookController } from '../infra/youtube/YoutubeWebhookController';
+import { YoutubeWebSubService } from '../infra/youtube/YoutubeWebSubService';
 
 import { NotifyNewVideoUseCase } from '../application/use-cases/NotifyNewVideoUseCase';
 import { HandleYoutubeWebhookUseCase } from '../application/use-cases/HandleYoutubeWebhookUseCase';
 import { SubscribeChannelUseCase } from '../application/use-cases/SubscribeChannelUseCase';
 import { UnsubscribeChannelUseCase } from '../application/use-cases/UnsubscribeChannelUseCase';
+import { SendTestNotificationUseCase } from '../application/use-cases/SendTestNotificationUseCase';
+import { GetGuildStatusUseCase } from '../application/use-cases/GetGuildStatusUseCase';
+import { UpdateGuildNotificationSettingsUseCase } from '../application/use-cases/UpdateGuildNotificationSettingsUseCase';
 
 import { createInteractionHandler } from '../infra/discord/commands/handleInteraction';
 
@@ -45,19 +50,17 @@ if (!fs.existsSync(dbDir)) {
 }
 
 const subscriptionRepository = new SqliteSubscriptionRepository(dbPath);
+const settingsRepository = new SqliteGuildNotificationSettingsRepository(dbPath);
+export const youtubeWebSubService = new YoutubeWebSubService(
+  env.YOUTUBE_CALLBACK_URL,
+  env.WEBHOOK_SECRET,
+);
 
-// ─── Graceful shutdown ────────────────────────────────────────────────────────
-// Close the SQLite connection cleanly when the process exits, preventing
-// WAL file corruption or data loss.
-
-function shutdown(): void {
+export function closeInfrastructure(): void {
   console.log('[shutdown] Closing SQLite database…');
   subscriptionRepository.close();
-  process.exit(0);
+  settingsRepository.close();
 }
-
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
 
 // ─── Use-cases ────────────────────────────────────────────────────────────────
 //
@@ -69,16 +72,21 @@ export const notifyNewVideoUseCase = new NotifyNewVideoUseCase(
   youtubeGateway,
   notificationService,
   subscriptionRepository,
+  settingsRepository,
 );
 
 export const handleYoutubeWebhookUseCase = new HandleYoutubeWebhookUseCase(
   notificationService,
   subscriptionRepository,
+  settingsRepository,
 );
 
 export const subscribeChannelUseCase = new SubscribeChannelUseCase(subscriptionRepository);
 
 export const unsubscribeChannelUseCase = new UnsubscribeChannelUseCase(subscriptionRepository);
+export const sendTestNotificationUseCase = new SendTestNotificationUseCase(notificationService);
+export const getGuildStatusUseCase = new GetGuildStatusUseCase(subscriptionRepository, settingsRepository);
+export const updateGuildNotificationSettingsUseCase = new UpdateGuildNotificationSettingsUseCase(settingsRepository);
 
 // ─── Discord interaction handler ──────────────────────────────────────────────
 //
@@ -89,9 +97,12 @@ export const unsubscribeChannelUseCase = new UnsubscribeChannelUseCase(subscript
 export const interactionHandler = createInteractionHandler(
   subscribeChannelUseCase,
   unsubscribeChannelUseCase,
+  sendTestNotificationUseCase,
+  getGuildStatusUseCase,
+  updateGuildNotificationSettingsUseCase,
   env.YOUTUBE_CHANNELS,
 );
 
 // ─── HTTP Controllers ─────────────────────────────────────────────────────────
 
-export const youtubeWebhookController = new YoutubeWebhookController(handleYoutubeWebhookUseCase);
+export const youtubeWebhookController = new YoutubeWebhookController(handleYoutubeWebhookUseCase, env.WEBHOOK_SECRET);

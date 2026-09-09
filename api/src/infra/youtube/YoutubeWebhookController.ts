@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { parseStringPromise } from 'xml2js';
 import { Video } from '../../domain/entities/Video';
-import { HandleYoutubeWebhookUseCase } from '../../application/use-cases/HandleYoutubeWebhookUseCase';
-import { YoutubeFeed, YoutubeEntry, YoutubeEntryLink } from './YoutubeTypes';
+import type { HandleYoutubeWebhookUseCase } from '../../application/use-cases/HandleYoutubeWebhookUseCase';
+import type { YoutubeFeed, YoutubeEntry, YoutubeEntryLink } from './YoutubeTypes';
 
 /**
  * YoutubeWebhookController — HTTP controller for YouTube PubSubHubbub
@@ -20,7 +21,7 @@ import { YoutubeFeed, YoutubeEntry, YoutubeEntryLink } from './YoutubeTypes';
  * objects and delegates all business logic to the use-case.
  */
 export class YoutubeWebhookController {
-  constructor(private readonly handleWebhookUseCase: HandleYoutubeWebhookUseCase) {}
+  constructor(private readonly handleWebhookUseCase: HandleYoutubeWebhookUseCase, private readonly secret: string) {}
 
   /**
    * Handles GET verification from YouTube's hub.
@@ -42,7 +43,12 @@ export class YoutubeWebhookController {
    */
   async handleNotification(req: Request, res: Response): Promise<void> {
     try {
-      const body = req.body as string;
+      const rawBody = req.body as Buffer;
+      if (this.secret && !this.hasValidSignature(rawBody, req.header('x-hub-signature'))) {
+        res.status(401).send('Invalid webhook signature');
+        return;
+      }
+      const body = rawBody?.toString('utf8');
 
       if (!body || body.trim().length === 0) {
         res.status(400).send('Empty request body');
@@ -87,5 +93,15 @@ export class YoutubeWebhookController {
       console.error('[YoutubeWebhookController] Error handling notification:', error);
       res.status(500).send('Internal Server Error');
     }
+  }
+
+  private hasValidSignature(body: Buffer, signature: string | undefined): boolean {
+    if (!signature) return false;
+    const [algorithm, received] = signature.split('=', 2);
+    if (!received || !['sha1', 'sha256'].includes(algorithm)) return false;
+    const expected = createHmac(algorithm, this.secret).update(body).digest('hex');
+    const expectedBuffer = Buffer.from(expected, 'hex');
+    const receivedBuffer = Buffer.from(received, 'hex');
+    return expectedBuffer.length === receivedBuffer.length && timingSafeEqual(expectedBuffer, receivedBuffer);
   }
 }

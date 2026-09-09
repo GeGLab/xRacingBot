@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { content } from "./content";
 import type { Locale } from "./content";
+import { LanguageContext } from "./language-context";
 
 const STORAGE_KEY = "bora-de-xracing-language";
 function initialLocale(): Locale {
@@ -14,12 +15,6 @@ function initialLocale(): Locale {
   }
   return "pt-BR";
 }
-
-const LanguageContext = createContext<{
-  locale: Locale;
-  setLocale: (locale: Locale) => void;
-  t: (typeof content)[Locale];
-} | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>(initialLocale);
@@ -61,10 +56,4 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       {children}
     </LanguageContext.Provider>
   );
-}
-
-export function useLanguage() {
-  const value = useContext(LanguageContext);
-  if (!value) throw new Error("useLanguage requires LanguageProvider");
-  return value;
 }

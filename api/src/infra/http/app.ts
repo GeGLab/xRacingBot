@@ -1,5 +1,6 @@
-import express, { Application } from 'express';
-import { YoutubeWebhookController } from '../youtube/YoutubeWebhookController';
+import type { Application } from 'express';
+import express from 'express';
+import type { YoutubeWebhookController } from '../youtube/YoutubeWebhookController';
 
 /**
  * createApp
@@ -18,8 +19,9 @@ export function createApp(webhookController: YoutubeWebhookController): Applicat
 
   // YouTube sends Atom XML — accept common XML content types as raw text
   app.use(
-    express.text({
+    express.raw({
       type: ['application/atom+xml', 'text/xml', 'application/xml', 'text/*'],
+      limit: '1mb',
     }),
   );
 

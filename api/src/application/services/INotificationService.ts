@@ -17,7 +17,9 @@ export interface SendNotificationInput {
    * - `'new'` — video was published today, sends a launch notification
    * - `'reminder'` — video is not from today, sends a reminder to watch
    */
-  type: 'new' | 'reminder';
+  type: 'new' | 'reminder' | 'test';
+  /** Explicit server preference. @everyone is never inferred from permissions alone. */
+  mentionEveryone?: boolean;
 }
 
 export interface INotificationService {
