@@ -1,107 +1,179 @@
+﻿[Leia em Português (Brasil)](README.pt-BR.md)
+
 # Bora de xracing
 
-> Vídeo novo. Galera na call.
+> New video. Meet in voice chat.
 
-Um projeto independente, gratuito e feito por fã para fãs. O bot envia no Discord os links de novos vídeos dos canais **xracing Videos** e **xracing Quedas**, para que grupos de amigos saibam quando é hora de entrar em call e assistir juntos.
+A fan-made Discord bot that posts new **xracing Videos** and **xracing Quedas** uploads in your server, so friends know when to get together and watch. This repository includes the bot, its HTTP backend, and a bilingual landing page.
 
-Não é um produto oficial e não possui afiliação, patrocínio ou parceria com xracing, YouTube ou Discord.
+An independent, free fan project with no affiliation, sponsorship, or partnership with xracing, YouTube, or Discord.
 
-## O que existe hoje
+## Features
 
-- Landing page em PT-BR e inglês, com convite OAuth2 para o Discord.
-- Comandos `/subscribe` e `/unsubscribe` para acompanhar um ou ambos os canais.
-- Persistência local de inscrições com SQLite.
-- Leitura do feed Atom público do YouTube, sem necessidade de chave da API do Google.
-- Bot em `discord.js` que entrega o link do vídeo no canal configurado.
-- Webhook para notificações do hub do YouTube, quando o serviço recebe uma URL pública configurada.
+- Subscribe a Discord text channel to one or all configured YouTube channels.
+- Receive video links through YouTube WebSub notifications, with RSS polling every five minutes as a fallback.
+- Use public YouTube Atom feeds without a Google API key.
+- Store subscriptions, the last notified video ID, and server ping preferences in SQLite.
+- Check subscription status and send a test notification from Discord.
+- Enable or disable `@everyone` mentions per server; mentions are disabled by default.
+- Receive signed webhooks with HMAC verification and automatic WebSub subscription renewal.
+- Explore a responsive landing page in Brazilian Portuguese and English, with a Discord bot invitation.
+- Run the backend and frontend with Docker Compose.
 
-## Como funciona
+The bot posts video links. Friends join voice chat and share their screens themselves.
 
-```text
-YouTube → feed/webhook → bot → canal de texto do Discord → call com os amigos
-```
-
-O bot envia o aviso e o link. Ele não inicia chamadas, não transmite o vídeo e não compartilha a tela automaticamente.
-
-## Estrutura
+## How it works
 
 ```text
-front/   Landing page React + Vite
-api/     Bot Discord + Express + SQLite
+YouTube uploads
+    | WebSub webhook / RSS polling
+    v
+Application use cases <--> SQLite subscriptions and preferences
+    |
+    v
+Discord text channel --> Friends meet in voice chat
 ```
 
-O backend usa separação entre domínio, casos de uso e infraestrutura para manter Discord, YouTube e banco de dados substituíveis.
+Each subscription stores its last notified video ID to skip repeated entries. Both notification paths only announce videos published on the current UTC date; older videos are recorded as seen without an alert. RSS polling checks the latest upload for each subscribed YouTube channel, rather than replaying the full upload history.
 
-## Rodando localmente
+## Tech stack and structure
 
-Você precisa de Node.js 20+ e de uma aplicação de bot criada no [Discord Developer Portal](https://discord.com/developers/applications).
+| Component | Technologies |
+| --- | --- |
+| Bot and backend | TypeScript, Node.js, discord.js, Express |
+| YouTube integration | WebSub / PubSubHubbub, Atom feeds, node-cron |
+| Persistence | SQLite via better-sqlite3 |
+| Landing page | React 19, Vite, Tailwind CSS |
+| Testing and tooling | Vitest, ESLint, TypeScript |
+| Containers | Docker Compose, Nginx for the frontend |
+
+```text
+api/
+  src/domain/         Entities and repository contracts
+  src/application/    Use cases and service contracts
+  src/infra/          Discord, YouTube, SQLite, and HTTP adapters
+  src/main/           Configuration, dependency wiring, jobs, and startup
+  tests/              Tests for use cases, repositories, and YouTube adapters
+front/
+  src/                React components, translations, and site configuration
+  public/             Images, icons, and static metadata
+docker-compose.yml    Backend, frontend, and persistent SQLite volume
+```
+
+The backend follows Clean Architecture, separating business rules from Discord, YouTube, HTTP, and database integrations.
+
+## Run locally
+
+You need Node.js 20 or later, npm, and a bot application created in the [Discord Developer Portal](https://discord.com/developers/applications).
 
 ```bash
 git clone https://github.com/guilhermeSDB/xracing-notifier.git
 cd xracing-notifier
+npm ci --prefix api
+npm ci --prefix front
 ```
 
-Configure as variáveis de ambiente a partir de `.env.example`. Nunca inclua tokens ou arquivos `.env` no Git.
+### Configure the backend
 
-```bash
-npm install --prefix api
-npm install --prefix front
-npm run dev --prefix api
-npm run dev --prefix front
+Create `api/.env` with the following settings and replace the token:
+
+```dotenv
+DISCORD_TOKEN=your_discord_bot_token
+YOUTUBE_CHANNELS=xracing:UCW3oIxTLllTLK3Vy9jzdoEg,xracing Quedas:UCfjNkkpiOZjPnvfV1mcrwmQ
+DATABASE_PATH=./data/bot.db
+PORT=3000
+YOUTUBE_CALLBACK_URL=
+WEBHOOK_SECRET=
 ```
 
-A landing abre, por padrão, em `http://localhost:5173`. O backend expõe `GET /health` na porta configurada (3000 por padrão).
+This configuration runs with RSS polling only, so local development does not require a public webhook URL. The backend reads `YOUTUBE_CHANNELS` (plural), using comma-separated `name:channel_id` entries. Keep tokens and `.env` files out of version control.
 
-Para habilitar WebSub no servidor, configure `YOUTUBE_CALLBACK_URL` com a URL HTTPS pública completa de `/webhook/youtube` e gere um `WEBHOOK_SECRET` longo e aleatório. O bot registra os feeds na inicialização, renova a inscrição a cada quatro dias e mantém o polling a cada cinco minutos como fallback.
-
-### Variáveis principais
-
-| Variável | Uso |
-| --- | --- |
-| `DISCORD_TOKEN` | Token secreto do bot Discord. |
-| `YOUTUBE_CHANNELS` | Canais no formato `nome:ID_DO_CANAL`, separados por vírgula. |
-| `DATABASE_PATH` | Caminho do arquivo SQLite. |
-| `YOUTUBE_CALLBACK_URL` | URL pública do endpoint `/webhook/youtube`, caso use notificações por webhook. |
-| `VITE_DISCORD_CLIENT_ID` | Client ID público usado para montar o convite do bot. |
-
-## Comandos
-
-| Comando | O que faz |
-| --- | --- |
-| `/subscribe canal:<opção>` | Inscreve o canal de texto atual nos avisos. |
-| `/unsubscribe canal:<opção>` | Remove a inscrição do servidor para a opção escolhida. |
-| `/status` | Mostra inscrições e a configuração de ping, de forma privada. |
-| `/test` | Envia um teste no canal atual, sem mencionar ninguém. |
-| `/configurar-ping modo:<opção>` | Define se avisos podem usar `@everyone` neste servidor. |
-
-É necessário ter a permissão **Gerenciar Servidor** para alterar inscrições.
-
-## Desenvolvimento
+Start the backend in one terminal, from the repository root:
 
 ```bash
-npm run build --prefix front
-npm run typecheck --prefix api
+cd api
+npm run dev
+```
+
+The HTTP health endpoint is available at `http://localhost:3000/health`. Slash commands are registered globally after the bot connects to Discord.
+
+### Configure the landing page
+
+Create `front/.env` using `front/.env.example` as a reference:
+
+```dotenv
+VITE_DISCORD_CLIENT_ID=your_discord_application_id
+VITE_SITE_URL=http://localhost:5173
+```
+
+Use the Application ID of your own bot to generate its invitation. Start the frontend in a second terminal, from the repository root:
+
+```bash
+cd front
+npm run dev
+```
+
+Open `http://localhost:5173` and use the invitation button to add your bot to a server. The landing page defaults to Portuguese; `?lang=en` selects English and `?lang=pt-BR` selects Brazilian Portuguese. Bot responses and notifications currently remain in Portuguese.
+
+## Discord commands
+
+All commands currently require the **Manage Server** permission and must be used inside a server. Select a configured YouTube channel or **Todos** (all) where applicable.
+
+| Command | Behavior |
+| --- | --- |
+| `/subscribe canal:<option>` | Subscribe the current text channel to the selected YouTube channel(s). |
+| `/unsubscribe canal:<option>` | Remove the server's subscription to the selected YouTube channel(s). |
+| `/status` | Privately show subscriptions, destination channels, and ping preferences. |
+| `/test` | Post a test notification in the current channel without mentioning anyone. |
+| `/configurar-ping modo:<option>` | Choose **Sem menção** (no mention) or **Mencionar @everyone**. |
+
+The bot needs permission to view and send messages in the destination channel. Enable **Embed Links** for video previews. An `@everyone` ping requires both the server preference and the bot's **Mention Everyone** permission in that channel.
+
+There is one destination per server and YouTube channel. To change it, unsubscribe and then subscribe again in the new text channel.
+
+## WebSub and deployment
+
+To enable push notifications, set these variables in the backend environment:
+
+```dotenv
+YOUTUBE_CALLBACK_URL=https://api.example.com/webhook/youtube
+WEBHOOK_SECRET=replace_with_a_long_random_secret
+```
+
+The callback must be a public HTTPS URL pointing to `/webhook/youtube`. The route accepts `GET` requests for hub verification and `POST` requests for notifications. A secret is required when a callback URL is configured. The backend subscribes at startup and schedules subscription renewal; RSS polling remains active.
+
+The landing page can be served as a static site from `front/dist`. The bot needs a continuously running process for its Discord Gateway connection and persistent storage for SQLite.
+
+### Docker Compose
+
+Create a root `.env` from `.env.example` and set `DISCORD_TOKEN`, `YOUTUBE_CALLBACK_URL`, and `WEBHOOK_SECRET`. Unlike the local RSS-only setup, the supplied Compose file requires all three values.
+
+For your own deployment, update the YouTube channels and frontend build arguments (`VITE_DISCORD_CLIENT_ID` and `VITE_SITE_URL`) directly in `docker-compose.yml`: those values are currently fixed in the file, rather than read from the root `.env`.
+
+```bash
+docker compose up -d --build
+```
+
+The frontend is exposed on port `80`, the backend on port `3000`, and the database is stored in the `sqlite_data` volume. Put an HTTPS reverse proxy in front of the backend for WebSub. To run only the bot and backend:
+
+```bash
+docker compose up -d --build api
+```
+
+## Development checks
+
+Run from the repository root:
+
+```bash
 npm test --prefix api
+npm run typecheck --prefix api
 npm run lint --prefix api
+npm run build --prefix api
+npm run build --prefix front
 ```
 
-## Implantação
+Backend tests cover notification rules, subscription use cases, repositories, RSS parsing, and WebSub requests. Frontend production builds include TypeScript checks.
 
-A landing pode ser hospedada como site estático em Vercel. O bot, porém, mantém uma conexão persistente com o gateway do Discord e usa SQLite local; por isso ele precisa de um processo sempre ativo e de armazenamento persistente. Uma arquitetura prática é:
+## Credits
 
-- **Vercel + Next.js:** landing, documentação, painel futuro e endpoints HTTP curtos.
-- **Render, Railway, Fly.io ou VPS:** processo do bot Discord e webhook do YouTube.
-- **Postgres gerenciado:** inscrições, status e preferências quando o projeto deixar de usar SQLite local.
-
-O fluxo GitHub → Vercel pode publicar automaticamente a landing a cada push. Uma integração com a API do GitHub só é necessária se o produto for oferecer recursos que leiam ou escrevam em repositórios; não é necessária para deploy automático.
-
-## Próximos passos
-
-- Adicionar idioma por servidor aos comandos e às notificações.
-- Guardar idioma por servidor e traduzir os avisos do bot.
-- Migrar inscrições para Postgres antes de escalar ou mover o bot para ambiente serverless.
-- Transformar o frontend em Next.js somente quando houver painel autenticado, configurações por servidor ou páginas renderizadas no servidor.
-
-## Créditos
-
-Produto [G&G Desenvolvimento, Brasil](https://geg.dev.br/pt/).
+Built by [G&G Desenvolvimento, Brazil](https://geg.dev.br/pt/), inspired by watching xracing with friends on Discord.
